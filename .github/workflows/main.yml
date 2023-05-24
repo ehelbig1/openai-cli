@@ -33,16 +33,26 @@ jobs:
         include:
           - os: macos-latest
             arch: arm64    # M1 architecture
+            platform: macos-m1
+            file_extension: ""
           - os: macos-latest
             arch: x86_64   # Intel architecture
+            platform: macos-intel
+            file_extension: ""
+          - os: ubuntu-latest
+            platform: linux
+            file_extension: ""
+          - os: windows-latest
+            platform: windows
+            file_extension: .exe
     steps:
       - uses: actions/checkout@v3
       - run: cargo build --release
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: openai-cli
-          path: target/release/openai-cli
+          name: openai-cli-${{ matrix.platform }}
+          path: target/release/openai-cli${{ matrix.file_extension }}
       - name: Upload Release Asset
         id: upload-release-asset 
         uses: actions/upload-release-asset@v1
@@ -50,6 +60,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: target/release/openai-cli
-          asset_name: openai-cli
+          asset_path: target/release/openai-cli${{ matrix.file_extension }}
+          asset_name: openai-cli-${{ matrix.platform }}
           asset_content_type: application/octet-stream
