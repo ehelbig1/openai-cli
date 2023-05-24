@@ -32,12 +32,7 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
         include:
           - os: macos-latest
-            arch: arm64    # M1 architecture
-            platform: macos-m1
-            file_extension: ""
-          - os: macos-latest
-            arch: x86_64   # Intel architecture
-            platform: macos-intel
+            platform: macos
             file_extension: ""
           - os: ubuntu-latest
             platform: linux
