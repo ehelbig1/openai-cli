@@ -27,11 +27,11 @@ pub struct Create {
     #[structopt(long, short)]
     pub suffix: Option<String>,
 
-    #[structopt(long)]
-    pub max_tokens: Option<usize>,
+    #[structopt(long, default_value="100")]
+    pub max_tokens: usize,
 
-    #[structopt(long, short)]
-    pub temperature: Option<f32>,
+    #[structopt(long, short, default_value="0.0")]
+    pub temperature: f32,
 }
 
 #[async_trait]
@@ -47,7 +47,6 @@ impl Command for Opt {
                 opt.model.clone(),
                 opt.prompt.clone(),
             )
-            .suffix(opt.suffix.clone())
             .max_tokens(opt.max_tokens)
             .temperature(opt.temperature),
         };

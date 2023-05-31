@@ -73,21 +73,19 @@ impl Request {
         }
     }
 
-    pub fn suffix(mut self, suffix: Option<String>) -> Self {
-        self.suffix = suffix;
+    pub fn suffix(mut self, suffix: String) -> Self {
+        self.suffix = Some(suffix);
         self
     }
 
-    pub fn max_tokens(mut self, max_tokens: Option<usize>) -> Self {
-        self.max_tokens = max_tokens;
+    pub fn max_tokens(mut self, max_tokens: usize) -> Self {
+        self.max_tokens = Some(max_tokens);
         self
     }
 
-    pub fn temperature(mut self, temperature: Option<f32>) -> Self {
-        if let Some(temperature) = temperature {
-            if temperature <= 2.0 || temperature >= 0.0 {
-                self.temperature = Some(temperature);
-            }
+    pub fn temperature(mut self, temperature: f32) -> Self {
+        if temperature <= 2.0 || temperature >= 0.0 {
+            self.temperature = Some(temperature);
         }
 
         self
