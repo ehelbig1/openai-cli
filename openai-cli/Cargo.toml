@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.71"
 async-trait = "0.1.68"
+console = "0.15.7"
 env_logger = "0.10.0"
 log = "0.4.17"
 openai-api = { path = "../openai-api" }

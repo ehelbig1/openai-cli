@@ -15,6 +15,10 @@ pub trait Datasource {
         &self,
         request: &model::create_chat::Request,
     ) -> Result<model::create_chat::Response, error::Error>;
+    async fn create_image(
+        &self,
+        request: &model::create_image::Request,
+    ) -> Result<model::create_image::Response, error::Error>;
     async fn list_files(&self) -> Result<model::list_files::Response, error::Error>;
 }
 
@@ -97,6 +101,33 @@ impl Datasource for OpenAIApi {
         match response.error_for_status() {
             Ok(response) => {
                 let data: model::create_chat::Response = response.json().await?;
+
+                Ok(data)
+            }
+            Err(error) => Err(error::Error::InvalidHttpResponse(error.to_string())),
+        }
+    }
+
+    async fn create_image(
+        &self,
+        request: &model::create_image::Request,
+    ) -> Result<model::create_image::Response, error::Error> {
+        let body = serde_json::to_string(&request)?;
+
+        println!("{}", &body);
+
+        let response = self
+            .http_client
+            .post(format!("{}/v1/images/generations", &self.base_url))
+            .header("Content-Type", "application/json")
+            .bearer_auth(&self.api_key)
+            .body(body)
+            .send()
+            .await?;
+
+        match response.error_for_status() {
+            Ok(response) => {
+                let data: model::create_image::Response = response.json().await?;
 
                 Ok(data)
             }

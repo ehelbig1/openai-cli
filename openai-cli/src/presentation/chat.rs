@@ -1,5 +1,6 @@
 use anyhow::Error;
 use async_trait::async_trait;
+use console;
 use openai_api::Datasource;
 use std::{io, sync};
 use structopt::StructOpt;
@@ -51,7 +52,13 @@ impl Command for Opt {
             }
         };
 
-        println!("What can I assist you with?");
+        let assistant_response = console::Style::new().blue();
+        let assistant = console::Style::new().dim();
+
+        println!(
+            "{}",
+            assistant_response.apply_to("What can I assist you with?")
+        );
 
         loop {
             let mut content = String::new();
@@ -72,7 +79,8 @@ impl Command for Opt {
 
             println!(
                 "{:#?}: {:#?}",
-                response.choices[0].message.role, response.choices[0].message.content
+                assistant.apply_to(&response.choices[0].message.role),
+                assistant_response.apply_to(&response.choices[0].message.content)
             );
 
             request.messages.push(response.choices[0].message.clone());

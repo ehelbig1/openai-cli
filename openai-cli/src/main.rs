@@ -22,6 +22,7 @@ enum Subcommand {
     Model(presentation::model::Opt),
     Completion(presentation::completion::Opt),
     Chat(presentation::chat::Opt),
+    Image(presentation::image::Opt),
     File(presentation::file::Opt),
 }
 
@@ -48,6 +49,7 @@ async fn main() -> Result<(), Error> {
         Subcommand::Model(opt) => opt.run(http_client, api_key).await?,
         Subcommand::Completion(opt) => opt.run(http_client, api_key).await?,
         Subcommand::Chat(opt) => opt.run(http_client, api_key).await?,
+        Subcommand::Image(opt) => opt.run(http_client, api_key).await?,
         Subcommand::File(opt) => opt.run(http_client, api_key).await?,
     }
 

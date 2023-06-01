@@ -14,6 +14,12 @@ pub enum Error {
     #[error("Unsupported role: {0}")]
     UnsupportedRole(String),
 
+    #[error("Unsupported image size: {0}")]
+    UnsupportedImageSize(String),
+
+    #[error("Unsupported response format: {0}")]
+    UnsupportedResponseFormat(String),
+
     #[error("Json Serialization: {0}")]
     JsonSerialization(String),
 

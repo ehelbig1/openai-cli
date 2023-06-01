@@ -19,19 +19,16 @@ pub enum Subcommand {
 
 #[derive(StructOpt)]
 pub struct Create {
-    #[structopt(long, short, default_value = "text-davinci-003")]
-    pub model: openai_api::model::create_completion::Model,
-
     pub prompt: String,
 
-    #[structopt(long, short)]
-    pub suffix: Option<String>,
+    #[structopt(short, long = "number")]
+    pub n: Option<usize>,
 
-    #[structopt(long, default_value = "100")]
-    pub max_tokens: usize,
+    #[structopt(short, long)]
+    pub size: Option<openai_api::model::create_image::Size>,
 
-    #[structopt(long, short, default_value = "0.0")]
-    pub temperature: f32,
+    #[structopt(short, long)]
+    pub response_format: Option<openai_api::model::create_image::ResponseFormat>,
 }
 
 #[async_trait]
@@ -43,17 +40,14 @@ impl Command for Opt {
     ) -> Result<(), Error> {
         let datasource = openai_api::OpenAIApi::new(http_client, api_key);
         let request = match &self.subcommand {
-            Subcommand::Create(opt) => openai_api::model::create_completion::Request::new(
-                opt.model.clone(),
-                opt.prompt.clone(),
-            )
-            .max_tokens(opt.max_tokens)
-            .temperature(opt.temperature),
+            Subcommand::Create(opt) => {
+                openai_api::model::create_image::Request::new(opt.prompt.clone())
+            }
         };
 
-        let response = datasource.create_completion(&request).await?;
+        let response = datasource.create_image(&request).await?;
 
-        println!("{}", response.choices[0].text);
+        println!("{}", response.data[0].url.as_ref().unwrap());
 
         Ok(())
     }
