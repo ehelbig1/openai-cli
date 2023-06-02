@@ -85,11 +85,14 @@ impl FromStr for ResponseFormat {
 #[derive(Debug, Deserialize)]
 pub struct Response {
     pub created: usize,
-    pub data: Vec<ImageUrl>,
+    pub data: Vec<Data>,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct ImageUrl {
-    pub url: Option<url::Url>,
-    pub b64_json: Option<String>,
+pub enum Data {
+    #[serde(rename = "url")]
+    Url(Option<url::Url>),
+
+    #[serde(rename = "b64_json")]
+    B64Json(Option<String>),
 }

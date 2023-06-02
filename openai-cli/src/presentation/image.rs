@@ -1,9 +1,13 @@
 use anyhow::Error;
 use async_trait::async_trait;
-use openai_api::Datasource;
-use std::{fs, io::{self, Write}, sync};
-use structopt::StructOpt;
 use base64::{self, Engine};
+use openai_api::Datasource;
+use std::{
+    fs,
+    io::{self, Write},
+    sync,
+};
+use structopt::StructOpt;
 
 use super::command::Command;
 
@@ -42,26 +46,26 @@ impl Command for Opt {
         let datasource = openai_api::OpenAIApi::new(http_client, api_key);
         let request = match &self.subcommand {
             Subcommand::Create(opt) => {
-                openai_api::model::create_image::Request::new(opt.prompt.clone())
+                { openai_api::model::create_image::Request::new(opt.prompt.clone()) }
+                    .response_format(opt.response_format.as_ref().unwrap().clone())
             }
-            .response_format(opt.response_format.as_ref().unwrap().clone())
         };
 
         let response = datasource.create_image(&request).await?;
 
-        response.data
-            .iter()
-            .for_each(|data| {
-                match data {
-                    openai_api::model::create_image::Data::Url(url) => println!("{}", url.as_ref().unwrap().to_string()),
-                    openai_api::model::create_image::Data::B64Json(data) => {
-                        let data = base64::engine::general_purpose::STANDARD.decode(data.as_ref().unwrap()).unwrap();
-                        let file = fs::File::create("image.png").unwrap();
-                        let mut writer = io::BufWriter::new(file);
-                        writer.write(&data).unwrap();
-                    }
-                }
-            });
+        response.data.iter().for_each(|data| match data {
+            openai_api::model::create_image::Data::Url(url) => {
+                println!("{}", url.as_ref().unwrap())
+            }
+            openai_api::model::create_image::Data::B64Json(data) => {
+                let data = base64::engine::general_purpose::STANDARD
+                    .decode(data.as_ref().unwrap())
+                    .unwrap();
+                let file = fs::File::create("image.png").unwrap();
+                let mut writer = io::BufWriter::new(file);
+                let _bytes = writer.write(&data).unwrap();
+            }
+        });
 
         Ok(())
     }
