@@ -78,7 +78,7 @@ impl Command for Opt {
             let response = datasource.create_chat(&request).await?;
 
             println!(
-                "{:#?}: {:#?}",
+                "{:#?}: {}",
                 assistant.apply_to(&response.choices[0].message.role),
                 assistant_response.apply_to(&response.choices[0].message.content)
             );
