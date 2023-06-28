@@ -23,6 +23,7 @@ enum Subcommand {
     Completion(presentation::completion::Opt),
     Chat(presentation::chat::Opt),
     Image(presentation::image::Opt),
+    Edit(presentation::edit::Opt),
     File(presentation::file::Opt),
     Embedding(presentation::embedding::Opt),
 }
@@ -51,6 +52,7 @@ async fn main() -> Result<(), Error> {
         Subcommand::Completion(opt) => opt.run(http_client, api_key).await?,
         Subcommand::Chat(opt) => opt.run(http_client, api_key).await?,
         Subcommand::Image(opt) => opt.run(http_client, api_key).await?,
+        Subcommand::Edit(opt) => opt.run(http_client, api_key).await?,
         Subcommand::File(opt) => opt.run(http_client, api_key).await?,
         Subcommand::Embedding(opt) => opt.run(http_client, api_key).await?,
     }

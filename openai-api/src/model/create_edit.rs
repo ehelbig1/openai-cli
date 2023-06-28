@@ -1,6 +1,7 @@
-use serde::{Deserialize, Serialize};
+use std::str::FromStr;
+use crate::error;
 
-use super::object::Object;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize)]
 pub struct Request {
@@ -31,13 +32,25 @@ impl Request {
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub enum Model {
     #[serde(rename = "text-davinci-edit-001")]
     TextDavinciEdit001,
 
     #[serde(rename = "code-davinci-edit-001")]
     CodeDavinciEdit001,
+}
+
+impl FromStr for Model {
+    type Err = error::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "text-davinci-edit-001" => Ok(Self::TextDavinciEdit001),
+            "code-davinci-code-001" => Ok(Self::CodeDavinciEdit001),
+            _ => Err(Self::Err::UnsupportedModel(s.to_string())),
+        }
+    }
 }
 
 #[derive(Debug, Deserialize)]
@@ -59,4 +72,10 @@ pub struct Usage {
     pub prompt_tokens: usize,
     pub completion_tokens: usize,
     pub total_tokens: usize
+}
+
+#[derive(Debug, Deserialize)]
+pub enum Object {
+    #[serde(rename = "edit")]
+    Edit
 }

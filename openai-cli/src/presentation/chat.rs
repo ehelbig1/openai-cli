@@ -2,7 +2,7 @@ use anyhow::Error;
 use async_trait::async_trait;
 use console;
 use openai_api::Datasource;
-use std::{io, sync};
+use std::{io, sync, collections::HashMap};
 use structopt::StructOpt;
 
 use super::command::Command;
@@ -47,32 +47,55 @@ impl Command for Opt {
                 function_call: None,
             }];
 
-        let functions = vec![openai_api::model::function::Function::new(
-            String::from("test"),
-            String::from("this function is great for testing"),
-        )
-        .add_property(
-            String::from("test"),
-            openai_api::model::function::Parameter::String(
-                openai_api::model::function::JsonString::new(Some(String::from("Test")), None),
-            ),
-            true,
-        )
-        .add_property(
-            String::from("test2"),
-            openai_api::model::function::Parameter::String(
-                openai_api::model::function::JsonString::new(
-                    Some(String::from("number between 0 and 5")),
-                    None,
-                ),
-            ),
-            true,
-        )];
+        // let functions = vec![openai_api::model::function::Function::new(
+        //     String::from("test"),
+        //     String::from("this function is great for testing"),
+        // )
+        // .add_property(
+        //     String::from("test"),
+        //     openai_api::model::function::Parameter::String(
+        //         openai_api::model::function::JsonString::new(Some(String::from("Test")), None),
+        //     ),
+        //     true,
+        // )
+        // .add_property(
+        //     String::from("test2"),
+        //     openai_api::model::function::Parameter::Object(
+        //         openai_api::model::function::JsonObject::new(
+        //             HashMap::from([
+        //                 (
+        //                     String::from("test"), openai_api::model::function::Parameter::Object(
+        //                         openai_api::model::function::JsonObject::new(
+        //                             HashMap::from([
+        //                                 (
+        //                                     String::from("test"),
+        //                                     openai_api::model::function::Parameter::String(
+        //                                         openai_api::model::function::JsonString::new(
+        //                                             None,
+        //                                             Some(vec![
+        //                                                 String::from("this"),
+        //                                                 String::from("is"),
+        //                                                 String::from("a"),
+        //                                                 String::from("test")
+        //                                             ])
+        //                                         )
+        //                                     )
+        //                                 )
+        //                             ]),
+        //                             vec![])
+        //                     )
+        //                 )
+        //             ]),
+        //             vec![]
+        //         )
+        //     ),
+        //     true,
+        // )];
 
         let mut request = match &self.subcommand {
             Subcommand::Create(opt) => {
                 openai_api::model::create_chat::Request::new(&opt.model, messages)
-                    .functions(functions)
+                    // .functions(functions)
             }
         };
 
