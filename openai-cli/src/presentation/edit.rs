@@ -41,8 +41,8 @@ impl Command for Opt {
             Subcommand::Create(opt) => openai_api::model::create_edit::Request::new(
                 opt.model.clone(),
                 opt.input.clone(),
-                opt.instruction.clone()
-            )
+                opt.instruction.clone(),
+            ),
         };
 
         let response = datasource.create_edit(&request).await?;

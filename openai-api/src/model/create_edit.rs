@@ -1,5 +1,5 @@
-use std::str::FromStr;
 use crate::error;
+use std::str::FromStr;
 
 use serde::{Deserialize, Serialize};
 
@@ -16,7 +16,7 @@ pub struct Request {
     pub temperature: Option<f32>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub top_p: Option<usize>
+    pub top_p: Option<usize>,
 }
 
 impl Request {
@@ -27,7 +27,7 @@ impl Request {
             instruction,
             n: None,
             temperature: None,
-            top_p: None
+            top_p: None,
         }
     }
 }
@@ -58,24 +58,24 @@ pub struct Response {
     pub object: Object,
     pub created: usize,
     pub choices: Vec<Choice>,
-    pub usage: Usage
+    pub usage: Usage,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct Choice {
     pub text: String,
-    pub index: usize
+    pub index: usize,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct Usage {
     pub prompt_tokens: usize,
     pub completion_tokens: usize,
-    pub total_tokens: usize
+    pub total_tokens: usize,
 }
 
 #[derive(Debug, Deserialize)]
 pub enum Object {
     #[serde(rename = "edit")]
-    Edit
+    Edit,
 }

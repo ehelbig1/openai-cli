@@ -2,7 +2,7 @@ use anyhow::Error;
 use async_trait::async_trait;
 use console;
 use openai_api::Datasource;
-use std::{io, sync, collections::HashMap};
+use std::{io, sync};
 use structopt::StructOpt;
 
 use super::command::Command;
@@ -95,7 +95,7 @@ impl Command for Opt {
         let mut request = match &self.subcommand {
             Subcommand::Create(opt) => {
                 openai_api::model::create_chat::Request::new(&opt.model, messages)
-                    // .functions(functions)
+                // .functions(functions)
             }
         };
 

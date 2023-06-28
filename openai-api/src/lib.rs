@@ -21,7 +21,7 @@ pub trait Datasource {
     ) -> Result<model::create_image::Response, error::Error>;
     async fn create_edit(
         &self,
-        request: &model::create_edit::Request
+        request: &model::create_edit::Request,
     ) -> Result<model::create_edit::Response, error::Error>;
     async fn list_files(&self) -> Result<model::list_files::Response, error::Error>;
     async fn create_embedding(
