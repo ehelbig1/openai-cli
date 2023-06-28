@@ -20,6 +20,10 @@ pub trait Datasource {
         request: &model::create_image::Request,
     ) -> Result<model::create_image::Response, error::Error>;
     async fn list_files(&self) -> Result<model::list_files::Response, error::Error>;
+    async fn create_embedding(
+        &self,
+        request: &model::create_embedding::Request,
+    ) -> Result<model::create_embedding::Response, error::Error>;
 }
 
 pub struct OpenAIApi {
@@ -114,8 +118,6 @@ impl Datasource for OpenAIApi {
     ) -> Result<model::create_image::Response, error::Error> {
         let body = serde_json::to_string(&request)?;
 
-        println!("{}", &body);
-
         let response = self
             .http_client
             .post(format!("{}/v1/images/generations", &self.base_url))
@@ -152,5 +154,26 @@ impl Datasource for OpenAIApi {
             }
             Err(error) => Err(error::Error::InvalidHttpResponse(error.to_string())),
         }
+    }
+
+    async fn create_embedding(
+        &self,
+        request: &model::create_embedding::Request,
+    ) -> Result<model::create_embedding::Response, error::Error> {
+        let body = serde_json::to_string(&request)?;
+
+        let response = self
+            .http_client
+            .post(format!("{}/v1/embeddings", &self.base_url))
+            .header("Content-Type", "application/json")
+            .bearer_auth(&self.api_key)
+            .body(body)
+            .send()
+            .await?
+            .error_for_status()?
+            .json()
+            .await?;
+
+        Ok(response)
     }
 }

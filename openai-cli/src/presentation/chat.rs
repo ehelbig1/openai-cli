@@ -20,7 +20,7 @@ pub enum Subcommand {
 
 #[derive(StructOpt)]
 pub struct Create {
-    #[structopt(long, short, default_value = "gpt-3.5-turbo")]
+    #[structopt(long, short, default_value = "gpt-3.5-turbo-0613")]
     pub model: openai_api::model::create_chat::Model,
 
     #[structopt(long)]
@@ -42,13 +42,37 @@ impl Command for Opt {
         let messages: Vec<openai_api::model::create_chat::Message> =
             vec![openai_api::model::create_chat::Message {
                 role: openai_api::model::create_chat::Role::System,
-                content: String::from("You are a very helpful assistant"),
+                content: Some(String::from("You are a very helpful assistant")),
                 name: None,
+                function_call: None,
             }];
+
+        let functions = vec![openai_api::model::function::Function::new(
+            String::from("test"),
+            String::from("this function is great for testing"),
+        )
+        .add_property(
+            String::from("test"),
+            openai_api::model::function::Parameter::String(
+                openai_api::model::function::JsonString::new(Some(String::from("Test")), None),
+            ),
+            true,
+        )
+        .add_property(
+            String::from("test2"),
+            openai_api::model::function::Parameter::String(
+                openai_api::model::function::JsonString::new(
+                    Some(String::from("number between 0 and 5")),
+                    None,
+                ),
+            ),
+            true,
+        )];
 
         let mut request = match &self.subcommand {
             Subcommand::Create(opt) => {
-                openai_api::model::create_chat::Request::new(opt.model.clone(), messages)
+                openai_api::model::create_chat::Request::new(&opt.model, messages)
+                    .functions(functions)
             }
         };
 
@@ -71,19 +95,33 @@ impl Command for Opt {
                 .messages
                 .push(openai_api::model::create_chat::Message {
                     role: openai_api::model::create_chat::Role::User,
-                    content,
+                    content: Some(content),
                     name: None,
+                    function_call: None,
                 });
 
             let response = datasource.create_chat(&request).await?;
 
-            println!(
-                "{:#?}: {}",
-                assistant.apply_to(&response.choices[0].message.role),
-                assistant_response.apply_to(&response.choices[0].message.content)
-            );
+            match response.choices[0].finish_reason {
+                openai_api::model::create_chat::FinishReason::FunctionCall => {
+                    println!(
+                        "{:#?}: {:#?}",
+                        assistant.apply_to(&response.choices[0].message.role),
+                        assistant_response
+                            .apply_to(response.choices[0].message.function_call.as_ref().unwrap())
+                    );
+                }
+                _ => {
+                    println!(
+                        "{:#?}: {:#?}",
+                        assistant.apply_to(&response.choices[0].message.role),
+                        assistant_response
+                            .apply_to(&response.choices[0].message.content.as_ref().unwrap())
+                    );
 
-            request.messages.push(response.choices[0].message.clone());
+                    request.messages.push(response.choices[0].message.clone());
+                }
+            }
 
             println!()
         }

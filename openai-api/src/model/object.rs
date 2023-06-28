@@ -19,4 +19,7 @@ pub enum Object {
 
     #[serde(rename = "file")]
     File,
+
+    #[serde(rename = "embedding")]
+    Embedding,
 }

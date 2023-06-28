@@ -24,6 +24,7 @@ enum Subcommand {
     Chat(presentation::chat::Opt),
     Image(presentation::image::Opt),
     File(presentation::file::Opt),
+    Embedding(presentation::embedding::Opt),
 }
 
 #[tokio::main]
@@ -51,6 +52,7 @@ async fn main() -> Result<(), Error> {
         Subcommand::Chat(opt) => opt.run(http_client, api_key).await?,
         Subcommand::Image(opt) => opt.run(http_client, api_key).await?,
         Subcommand::File(opt) => opt.run(http_client, api_key).await?,
+        Subcommand::Embedding(opt) => opt.run(http_client, api_key).await?,
     }
 
     Ok(())
